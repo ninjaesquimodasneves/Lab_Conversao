@@ -11,6 +11,8 @@ Este tutorial possui um conjunto de serviços que fazem a manipulação de arqui
 ## 1. Logs
 O Logs tem a função de registrar as operações realizadas pelos serviços PDF Redutor e PDF para TEXT. Além disso, ele tem um registro dessas operações e pode emitir relatórios que forem precisos.
 
+## 2. 
+
 # Configurações Antes de Executar
 ## Docker
 
@@ -27,7 +29,7 @@ Para executar o projeto, siga estes passos:
 1. Clone o repositório para a sua máquina local:
 
    ```bash
-   git clone https://github.com/enzomazocorodrigues/pdf-converter.git
+   git clone https://github.com/ninjaesquimodasneves/Lab_Conversao.git
    ```
 
 1. Navegue até o diretório do projeto:
