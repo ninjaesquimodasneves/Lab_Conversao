@@ -3,86 +3,81 @@ import subprocess
 import requests
 from flask import Flask, redirect, render_template, request, send_file
 
-LOG_SERVICE_URL = os.environ.get('LOG_SERVICE_URL')
-LOG_TOKEN = os.environ.get('LOG_TOKEN')
+LOG_SERVICE_URL = os.getenv('LOG_SERVICE_URL')
+LOG_TOKEN = os.getenv('LOG_TOKEN')
 
 app = Flask(__name__)
 
 @app.route('/')
-def index():
-   return render_template('./upload.html')
-	
-@app.route('/upload', methods = ['POST'])
-def upload():
-   try:
-      if 'file' not in request.files:
-         raise Exception('Nenhum arquivo informado.')
-      file = request.files['file']
-      resolution = request.form.get('resolution')
-      if file.filename == '':
-         raise Exception('Nenhum arquivo informado.')
-      filename, extension = file.filename.split('.')
-      if not extension == 'pdf':
-         raise Exception('Arquivo deve ser .pdf.')
-      if not extension == 'pdf':
-         raise Exception('Arquivo deve ser .pdf.')
-      if not resolution:
-         raise Exception('Nunhuma resolução informada.')
+def home():
+    return render_template('upload.html')
 
-      resolution_key = get_resolution_key(resolution)
-      input_path = os.path.join('/tmp', file.filename)
-      output_path = os.path.join('/tmp', f'{resolution}_{filename}.pdf')
-      file.save(input_path)
+@app.route('/upload', methods=['POST'])
+def handle_upload():
+    try:
+        if 'file' not in request.files or request.files['file'].filename == '':
+            raise ValueError('Nenhum arquivo informado.')
 
-      gs_command = [
-         'gs',
-         '-sDEVICE=pdfwrite',
-         '-dCompatibilityLevel=1.4',
-         f'-dPDFSETTINGS={resolution_key}',
-         '-dNOPAUSE',
-         '-dBATCH',
-         f'-sOutputFile={output_path}',
-         input_path
-      ]
+        uploaded_file = request.files['file']
+        resolution = request.form.get('resolution')
 
-      subprocess.run(gs_command, check=True)
+        if not uploaded_file.filename.endswith('.pdf'):
+            raise ValueError('Arquivo deve ser .pdf.')
 
-      log_entry = {
-         'service': 'pdf-reducer',
-         'filename': file.filename,
-         'resolution': resolution,
-         'status': 200
-      }
-      log(log_entry)
-      return send_file(output_path, as_attachment=True)
-   except Exception as error:
-      print(str(error), flush=True)
-      log_entry = {
-         'service': 'pdf-to-text',
-         'error': str(error),
-         'status': 500
-      }
-      log(log_entry)
-      return redirect('/')
+        if not resolution:
+            raise ValueError('Nenhuma resolução informada.')
 
-def get_resolution_key(resolution):
-   try:
-      resolutions = {
-         'screen': '/screen',
-         'ebook': '/ebook',
-         'printer': '/printer',
-         'prepress': '/prepress',
-         'default': '/default'
-      }
-      return resolutions[resolution]
-   except KeyError:
-      raise Exception('Resolução informada inválida.')
+        resolution_key = get_resolution_setting(resolution)
+        input_path = os.path.join('/tmp', uploaded_file.filename)
+        output_filename = f"{resolution}_{uploaded_file.filename}"
+        output_path = os.path.join('/tmp', output_filename)
+        
+        uploaded_file.save(input_path)
 
-def log(log_entry):
-   headers = {
-      'Authorization': LOG_TOKEN
-   }
-   requests.post(LOG_SERVICE_URL, json=log_entry, headers=headers)
+        gs_command = [
+            'gs',
+            '-sDEVICE=pdfwrite',
+            '-dCompatibilityLevel=1.4',
+            f'-dPDFSETTINGS={resolution_key}',
+            '-dNOPAUSE',
+            '-dBATCH',
+            f'-sOutputFile={output_path}',
+            input_path
+        ]
+
+        subprocess.run(gs_command, check=True)
+
+        log_action('pdf-reducer', uploaded_file.filename, resolution, 200)
+        return send_file(output_path, as_attachment=True)
+    
+    except Exception as e:
+        error_message = str(e)
+        print(error_message, flush=True)
+        log_action('pdf-to-text', error=error_message, status=500)
+        return redirect('/')
+
+def get_resolution_setting(resolution):
+    resolution_mappings = {
+        'screen': '/screen',
+        'ebook': '/ebook',
+        'printer': '/printer',
+        'prepress': '/prepress',
+        'default': '/default'
+    }
+    if resolution not in resolution_mappings:
+        raise ValueError('Resolução informada inválida.')
+    return resolution_mappings[resolution]
+
+def log_action(service, filename=None, resolution=None, status=None, error=None):
+    log_entry = {
+        'service': service,
+        'filename': filename,
+        'resolution': resolution,
+        'status': status,
+        'error': error
+    }
+    headers = {'Authorization': LOG_TOKEN}
+    requests.post(LOG_SERVICE_URL, json=log_entry, headers=headers)
 
 if __name__ == '__main__':
-   app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
