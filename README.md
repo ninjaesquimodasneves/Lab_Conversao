@@ -60,3 +60,9 @@ curl -X POST -H "Authorization: your_pdftotxt_token" -F "file=@/caminho/para/seu
 ```bash
 curl http://localhost:5003/
 ```
+
+## Contribuições
+
+**Augusto Koshiyama Bento**: leitura dos artigos; auxílio na implementação do código e das rotas dos produtos; criação e composição do tutorial
+
+**Gabriel Moreira Cabral**: leitura dos artigos; implementação do código e das estratégias de cache.
