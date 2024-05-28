@@ -9,58 +9,49 @@ Este tutorial possui um conjunto de serviços que fazem a manipulação de arqui
 # Serviços a Serem Utilizados
 
 ## 1. Logs
-O Logs tem a função de registrar as operações realizadas pelos serviços PDF Redutor e PDF para TEXT. Além disso, ele tem um registro dessas operações e pode emitir relatórios que forem precisos.
+Os Logs têm a função de registrar as operações realizadas pelos serviços PDF Redutor e PDF para TEXT. Além disso, eles mantêm um registro detalhado dessas atividades e podem emitir relatórios conforme necessário. Os Logs também ajudam a monitorar o desempenho e a resolver problemas rapidamente.
 
-## 2. 
+## 2. PDF Reducer
+Serviço responsável pela redução da resolução de arquivos PDF. O usuário faz o upload do arquivo PDF, que é processado pelo software Ghostscript para ajustar a resolução conforme a preferência selecionada. Após a otimização, o arquivo é enviado de volta ao usuário. 
 
-# Configurações Antes de Executar
-## Docker
-
-Certifique-se de que você tem o Docker instalado na sua máquina. Você pode fazer o download e instalar o Docker a partir do [site oficial do Docker](https://www.docker.com/get-started).
-
-## Docker Compose
-
-Se o seu projeto utiliza o Docker Compose, você também precisará instalá-lo. O Docker Compose geralmente é incluído com o Docker Desktop. Mais informações sobre a instalação podem ser encontradas na [documentação oficial do Docker Compose](https://docs.docker.com/compose/install/).
+## 3. PDF to Txt
+Transforma arquivos PDF em texto, o usuário carrega um arquivo PDF, que é processado para extrair o texto contido. O texto extraído é então enviado de volta ao usuário em um arquivo .txt.
 
 # Executando o Projeto
 
-Para executar o projeto, siga estes passos:
+A seguir terá um passo a passo de como executar o laboratório:
 
-1. Clone o repositório para a sua máquina local:
+Abra um terminal e execute o comando abaixo para clonar o repositório do GitHub para a sua máquina local:
 
    ```bash
    git clone https://github.com/ninjaesquimodasneves/Lab_Conversao.git
    ```
-
-1. Navegue até o diretório do projeto:
+Após a clonagem, navegue até o diretório do projeto:
 
    ```bash
-   cd pdf-converter
+   cd Lab_Conversao
    ```
-
-1. Construa e execute os containers:
+Execute:
 
    ```bash
    docker-compose up --build
    ```
 
-## Testando os Serviços
+Vamos agora testar os dois serviços.
 
-Você pode testar os serviços utilizando ferramentas como `curl`, Postman ou até mesmo um browser.
-
-### Usando o PDF to TEXT
+### PDF to TEXT
 
 ```bash
-curl -X POST -H "Authorization: your_pdftotxt_token" -F "file=@/caminho/para/seu/arquivo.pdf" http://localhost:5001/upload
+curl -X POST -H "Authorization: Bearer SEU_TOKEN" -F "file=@seuarquivo.pdf" http://localhost:5001/upload
 ```
 
-### Usando o PDF Reducer
+### PDF Reducer
 
 ```bash
-curl -X POST -H "Authorization: your_pdftotxt_token" -F "file=@/caminho/para/seu/arquivo.pdf" -F "resolution=default" http://localhost:5002/upload
+curl -X POST -H "Authorization: Bearer SEU_TOKEN" -F "file=@seuarquivo.pdf" -F "resolution=default" http://localhost:5002/upload
 ```
 
-### Baixando os logs
+### Baixar Logs
 
 ```bash
 curl http://localhost:5003/
@@ -68,6 +59,6 @@ curl http://localhost:5003/
 
 # Contribuições
 
-**Augusto Koshiyama Bento**: leitura dos artigos; auxílio na implementação do código e das rotas dos produtos; criação e composição do tutorial
+**Augusto Koshiyama Bento**: implementou o serviço de conversão de PDF para TXT, desenvolveu o webservice para dois tipos de serviços, configurou a autenticação com token, desenvolveu a estrutura de log e a página web para o serviço de conversão.
 
-**Gabriel Moreira Cabral**: leitura dos artigos; implementação do código e das estratégias de cache.
+**Gabriel Moreira Cabral:**: implementou o serviço de redução de resolução de arquivos PDF, desenvolvou o webservice para os dois tipos de serviços, ajudou configurou a autenticação com token, desenvolveu a página web para o serviço de redução de resolução.
