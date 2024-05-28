@@ -4,11 +4,12 @@ Augusto Koshiyama Bento RA: 10389981
 Gabriel Moreira Cabral RA: 10332634
 
 # Projeto Lab Conversão PDF
-Este tutorial possui um conjunto de serviços que fazem a manipulação de arquivos em PDF. Esses serviços incluem logs, redução de resolução para PDF e o ponto principal que é a conversão de PDF para TXT. Os serviços são implementados em um contêiner Docker e posteriormente separado para ajudar o processo.
+Este tutorial possui um conjunto de serviços que fazem a manipulação de arquivos em PDF. Esses serviços incluem Logs, redução de resolução para PDF e o ponto principal que é a conversão de PDF para TXT. Os serviços são implementados em um contêiner Docker e posteriormente separado para ajudar o processo.
 
-# Visão Geral dos Serviços
+# Serviços a Serem Utilizados
 
-## 1. 
+## 1. Logs
+O Logs tem a função de registrar as operações realizadas pelos serviços PDF Redutor e PDF para TEXT. Além disso, ele tem um registro dessas operações e pode emitir relatórios que forem precisos.
 
 # Configurações Antes de Executar
 ## Docker
